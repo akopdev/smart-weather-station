@@ -1,3 +1,22 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This script fetches weather data from the Open-Meteo API for a given
+# location and time range. The data is fetched hourly and can include the
+# following features: temperature_2m, relative_humidity_2m, and rain.
+#
+# Usage:
+#   python tools/dataset.py --location=Berlin \
+#                            --start_date=2021-01-01 \
+#                            --end_date=2021-01-02 \
+#                            --features=temperature_2m,relative_humidity_2m,rain \
+#                            --format=csv
+#
+# Arguments:
+#   --location: The location for which the weather data should be fetched.
+#   --start_date: The start date of the time range for the weather data.
+#   --end_date: The end date of the time range for the weather data.
+#   --features: The features to include in the weather data.
+#   --format: The format of the weather data (csv, json, raw).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import argparse
 import logging
 import sys
@@ -7,7 +26,7 @@ from typing import List, Optional
 
 import pandas as pd
 import requests
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, model_validator
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +49,19 @@ class Settings(BaseModel):
     end_date: date
     features: Optional[List[Features]] = []
     format: Optional[Format] = Format.csv
+
+    @model_validator(mode="before")
+    def parse_features(values: dict):
+        """Parse features from comma separated string."""
+        if isinstance(values.get("features"), str):
+            values["features"] = values.get("features").split(",")
+        else:
+            values["features"] = [
+                Features.temperature_2m,
+                Features.relative_humidity_2m,
+                Features.rain,
+            ]
+        return values
 
 
 class Location(BaseModel):
@@ -78,8 +110,10 @@ def get_data(settings: Settings) -> pd.DataFrame:
         "longitude": location.longitude,
         "start_date": settings.start_date.strftime("%Y-%m-%d"),
         "end_date": settings.end_date.strftime("%Y-%m-%d"),
-        "hourly": ",".join(settings.features),
+        "hourly": ",".join([v.value for v in settings.features]),
     }
+
+    print(params)
 
     with requests.get("https://archive-api.open-meteo.com/v1/archive", params=params) as response:
         if response.status_code != 200:
@@ -96,13 +130,31 @@ def main():
     now = datetime.now(timezone.utc).date()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--location", type=str, required=True)
-    parser.add_argument("--start_date", type=str, default=now - timedelta(days=1))
-    parser.add_argument("--end_date", type=str, default=now)
     parser.add_argument(
-        "--features", type=list, default=["temperature_2m", "relative_humidity_2m", "rain"]
+        "--location",
+        type=str,
+        required=True,
+        help="The location for which the weather data should be fetched.",
     )
-    parser.add_argument("--format", type=str, default="csv")
+    parser.add_argument(
+        "--start_date",
+        type=str,
+        default=now - timedelta(days=1),
+        help="The start date of the time range for the weather data.",
+    )
+    parser.add_argument(
+        "--end_date",
+        type=str,
+        default=now,
+        help="The end date of the time range for the weather data.",
+    )
+    parser.add_argument(
+        "--features",
+        help="The features to include in the weather data.",
+    )
+    parser.add_argument(
+        "--format", type=str, default="csv", help="The format of the weather data (csv, json, raw)."
+    )
 
     try:
         args = parser.parse_args()
