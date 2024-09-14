@@ -125,6 +125,14 @@ def get_data(settings: Settings) -> pd.DataFrame:
         return pd.DataFrame(data.get("hourly"))
 
 
+def transform_data(data: pd.DataFrame) -> pd.DataFrame:
+    if data.empty:
+        return data
+
+    data["rain"] = data["rain"].apply(lambda x: 1 if x > 0 else 0)
+    return data
+
+
 def main():
     now = datetime.now(timezone.utc).date()
 
@@ -165,7 +173,7 @@ def main():
                 error.get("loc", ("system",))[0], error.get("msg")
             )
         )
-    data = get_data(settings)
+    data = transform_data(get_data(settings))
     if not data.empty:
         if settings.format == Format.csv:
             print(data.to_csv(index=False))
