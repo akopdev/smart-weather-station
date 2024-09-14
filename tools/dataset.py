@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This script fetches weather data from the Open-Meteo API for a given
 # location and time range. The data is fetched hourly and can include the
@@ -112,8 +113,6 @@ def get_data(settings: Settings) -> pd.DataFrame:
         "end_date": settings.end_date.strftime("%Y-%m-%d"),
         "hourly": ",".join([v.value for v in settings.features]),
     }
-
-    print(params)
 
     with requests.get("https://archive-api.open-meteo.com/v1/archive", params=params) as response:
         if response.status_code != 200:
