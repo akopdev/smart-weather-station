@@ -17,7 +17,7 @@ voice control.
     - Sample of 10 years 
     - Hourly frequency
     - Temperature, humidity, raining
-- [ ] Cleaning up the dataset
+- [X] Cleaning up the dataset
 	- Convert rain data into a binary (Yes/No)
 	- Balance the dataset by undersampling the majority class
 	- Scale the input features with Z-score
@@ -66,3 +66,14 @@ value.
 I decided to use a simple threshold, if the value is greater than 0.1, it's
 raining, otherwise it's not. Maybe it makes sense to think about more cases,
 like drizzle, but for now, I'll keep it simple.
+
+I used the basic `z-score` technique to scale the temperature and humidity features,
+to ensure that each input feature contributes equally during training. To validate the
+results, I plotted the histograms of the original and scaled data that can be found in
+`tools/zscore_visualization.py` file. Forward `tools/dataset.py` script through the
+pipe, example:
+
+```sh
+tools/dataset.py --start_date 2014-01-01 --end_date 2024-01-01 --location amsterdam \
+                --format csv | tools/explore.py
+```

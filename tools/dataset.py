@@ -104,7 +104,7 @@ def get_data(settings: Settings) -> pd.DataFrame:
     """
     location = get_location(settings.location)
     if not location:
-        return
+        return pd.DataFrame()
 
     params = {
         "latitude": location.latitude,
@@ -130,6 +130,10 @@ def transform_data(data: pd.DataFrame) -> pd.DataFrame:
         return data
 
     data["rain"] = data["rain"].apply(lambda x: 1 if x > 0 else 0)
+
+    # Calculate z-score for temperature and humidity
+    for col in ["temperature_2m", "relative_humidity_2m"]:
+        data[f"{col}_zscore"] = (data[col] - data[col].mean()) / data[col].std(ddof=0)
     return data
 
 
