@@ -53,8 +53,9 @@ To make a prediction for the rain, we need to convert data that comes as a float
 into a binary value. I decided to use a simple threshold, if the value is greater
 than 0.1, it's raining, otherwise it's not.
 
-For the temperature and humidity features, I need to rescale using `z-score` technique to 
-ensure that each input feature contributes equally during training.
+The temperature and humidity features have a different numerical ranges, and so 
+different contributions during training, leading to a bias. I need to rescale using 
+`z-score` technique to ensure that each input feature contributes equally during training.
 
 ## 0x02 Data cleaning and preparation
 
@@ -77,3 +78,9 @@ pipe, example:
 tools/dataset.py --start_date 2014-01-01 --end_date 2024-01-01 --location amsterdam \
                 --format csv | tools/explore.py
 ```
+## 0x03 Training the model
+
+I splitted the dataset into train, validation, and test subsets. I used a binary classification
+model with one fully connected layer with 12 neurons and followed by ReLU activation function,
+one dropout layer with 0.2 rate, and the output layer with a single neuron and sigmoid activation
+function.
