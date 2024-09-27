@@ -2,12 +2,12 @@
 import argparse
 import logging
 import sys
+from typing import List
 
 import pandas as pd
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow.keras import activations, layers
-from typing import List
+from tensorflow.keras import layers
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +33,26 @@ def model_init(data: List[str]):
     model.add(layers.Dropout(0.2))
     model.add(layers.Dense(1, activation="sigmoid"))
     model.summary()
+
+    # Compile the model
+    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
     return model
+
+
+def train(data: pd.DataFrame, model_name: str):
+    t_train, t_validate, t_test, h_train, h_validate, h_test = split_data(
+        data["temperature_2m"], data["relative_humidity_2m"]
+    )
+    model = model_init(data)
+    model.fit(
+        t_train,
+        h_train,
+        epochs=100,
+        batch_size=10,
+        verbose=1,
+        validation_data=(t_validate, h_validate),
+    )
+    model.save(model_name)
 
 
 def main():
@@ -42,15 +61,11 @@ def main():
     parser.add_argument("dataset", type=str, help="Path to the dataset")
     try:
         args = parser.parse_args()
-        args.dataset
         data = pd.read_csv(args.dataset)
-        t_train, t_validate, t_test, h_train, h_validate, h_test = split_data(
-            data["temperature_2m"], data["relative_humidity_2m"]
-        )
-        print("Train data:")
-        print(t_train, h_train)
     except Exception as e:
         sys.exit(e)
+
+    train(data, model_name="rain_forecast_model")
 
 
 if __name__ == "__main__":
