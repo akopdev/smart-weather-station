@@ -25,7 +25,7 @@ voice control.
 	- Split the dataset into train, validation, and test datasets
 	- Create a model with Keras API
 	- Analyze the accuracy and loss after each training epoch
-- [ ] Evaluating the model's effectiveness 
+- [X] Evaluating the model's effectiveness 
 	- Visualize a confusion matrix
 	- Calculate Recall, Precision, and F-score performance metrics
 - [ ] Quantizing the model with TFLite converter
@@ -70,20 +70,22 @@ like drizzle, but for now, I'll keep it simple.
 
 I used the basic `z-score` technique to scale the temperature and humidity features,
 to ensure that each input feature contributes equally during training. To validate the
-results, I plotted the histograms of the original and scaled data that can be found in
-`tools/zscore_visualization.py` file. Forward `tools/dataset.py` script through the
-pipe, example:
+results, 
 
-```sh
-tools/dataset.py --start_date 2014-01-01 --end_date 2024-01-01 --location amsterdam \
-                --format csv | tools/explore.py
+Example of usage (including default parameters) can be found in the `Makefile`:
+
+```bash
+make dataset
 ```
+
 ## Training the model
 
 I splitted the dataset into train, validation, and test subsets. I used a binary classification
 model with one fully connected layer with 12 neurons and followed by ReLU activation function,
 one dropout layer with 0.2 rate, and the output layer with a single neuron and sigmoid activation
 function.
+
+Use `make train` to train the model on downloaded dataset. 
 
 ## Evaluating the model
 
