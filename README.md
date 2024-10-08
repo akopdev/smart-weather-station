@@ -21,7 +21,7 @@ voice control.
 	- Convert rain data into a binary (Yes/No)
 	- Balance the dataset by undersampling the majority class
 	- Scale the input features with Z-score
-- [ ] Training the model with TensorFlow 
+- [X] Training the model with TensorFlow 
 	- Split the dataset into train, validation, and test datasets
 	- Create a model with Keras API
 	- Analyze the accuracy and loss after each training epoch
@@ -33,20 +33,20 @@ voice control.
 - [ ] On-device inference with TFLu
 	- Circuit buffer 
 
-## 0x01 Prepare dataset
+## Prepare dataset
 
 In order to make training the model easier and reproducible, I wrote a script
 to download the dataset from Open Meteo through their API. 
 
-Script supports multiple different parameters, like location and date range.
+Script supports multiple parameters, like location and date range.
 To make it more useful, I added a feature to save the data to different formats,
 like CSV, JSON, and column text, primarily used for debugging.
 
-The script is pretty straightforward, I decided not to use asyncronous approach,
+The script is pretty straightforward, I decided not to use asynchronous approach,
 since script is going to be run only in one thread and only single request, it 
 should be fast enough.
 
-For both user input and API response validation I used `pydantic` library, with
+For both, user input and API response validation, I used `pydantic` library, with
 some custom validators, primarily for processing multiple values from the user.
 
 To make a prediction for the rain, we need to convert data that comes as a float,
@@ -57,7 +57,7 @@ The temperature and humidity features have a different numerical ranges, and so
 different contributions during training, leading to a bias. I need to rescale using 
 `z-score` technique to ensure that each input feature contributes equally during training.
 
-## 0x02 Data cleaning and preparation
+## Data cleaning and preparation
 
 Although the data we have is already quite clean, we still need to do some
 post-processing to make it more suitable for training the model. For instance, 
@@ -78,9 +78,28 @@ pipe, example:
 tools/dataset.py --start_date 2014-01-01 --end_date 2024-01-01 --location amsterdam \
                 --format csv | tools/explore.py
 ```
-## 0x03 Training the model
+## Training the model
 
 I splitted the dataset into train, validation, and test subsets. I used a binary classification
 model with one fully connected layer with 12 neurons and followed by ReLU activation function,
 one dropout layer with 0.2 rate, and the output layer with a single neuron and sigmoid activation
 function.
+
+## Evaluating the model
+
+I calculated the confusion matrix, and common performance metrics: 
+
+- `accuracy`: the ratio of correctly predictions to the total number of tests
+- `recall`: metric tells us how many of the actual positive cases we were able to predict (higher is better)
+- `precision`: how many of the predicted positive cases were actually positive (higher is better)
+- `f1-score`: helps to evaluate recall and precision metrics at the same time (higher is better)
+
+
+## Reminders to myself
+
+- Python packages, specially so complicated as TensorFlow, can be a nightmare to install. I spent
+hours trying to reproduce Jupyter notebook environment both remote and local, and each time I ran
+into a different issue. Best start for a new ML project is to create a robust environment with
+Docker, and python dependencies, pinned to the specific version.
+- I can't find any benefit of wrapping code into a cli tools, and fitting it into data pipeline
+framework might be much more beneficial.
