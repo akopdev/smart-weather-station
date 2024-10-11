@@ -4,9 +4,7 @@ import argparse
 import logging
 import sys
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 import sklearn.metrics
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
@@ -32,7 +30,7 @@ def split_data(
 
 def model_init():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(12, activation="relu"))
+    model.add(layers.Dense(12, activation="relu", input_shape=(2,)))
     model.add(layers.Dropout(0.2))
     model.add(layers.Dense(1, activation="sigmoid"))
     model.summary()
@@ -63,10 +61,11 @@ def evaluate(x_test: pd.DataFrame, y_test: pd.DataFrame, model: tf.keras.Model):
     #       if the model performs not good enough.
     print("Training evaluation")
     print("===================")
-    print("Accuracy:  ", round(accuracy, 3))
-    print("Recall:    ", round(recall, 3))
-    print("Precision: ", round(precision, 3))
-    print("F-score:   ", round(f_score, 3))
+    print("Confusion matrix: ", cm)
+    print("Accuracy:         ", round(accuracy, 3))
+    print("Recall:           ", round(recall, 3))
+    print("Precision:        ", round(precision, 3))
+    print("F-score:          ", round(f_score, 3))
 
 
 def train(data: pd.DataFrame, epochs: int = 20, batch_size: int = 64):

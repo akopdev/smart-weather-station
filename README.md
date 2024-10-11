@@ -68,6 +68,10 @@ I decided to use a simple threshold, if the value is greater than 0.1, it's
 raining, otherwise it's not. Maybe it makes sense to think about more cases,
 like drizzle, but for now, I'll keep it simple.
 
+Since the dataset is unbalanced, I decided to undersample the majority class (no rain 
+in my case). Without this step, the model will fail to learn the patterns of the minority,
+and performance of `recall` and `precision` metrics will be very poor.
+
 I used the basic `z-score` technique to scale the temperature and humidity features,
 to ensure that each input feature contributes equally during training. To validate the
 results, 
@@ -104,4 +108,4 @@ hours trying to reproduce Jupyter notebook environment both remote and local, an
 into a different issue. Best start for a new ML project is to create a robust environment with
 Docker, and python dependencies, pinned to the specific version.
 - I can't find any benefit of wrapping code into a cli tools, and fitting it into data pipeline
-framework might be much more beneficial.
+framework might be much more practical.

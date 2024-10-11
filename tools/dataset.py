@@ -125,11 +125,29 @@ def get_data(settings: Settings) -> pd.DataFrame:
         return pd.DataFrame(data.get("hourly"))
 
 
+def undersampling_majority_class(
+    df_majority: pd.DataFrame, df_minority: pd.DataFrame
+) -> pd.DataFrame:
+    # Undersample the majority class to match the minority class size
+    df_majority_undersampled = df_majority.sample(len(df_minority), random_state=42)
+
+    # Combine the minority class with the undersampled majority class
+    df_balanced = pd.concat([df_minority, df_majority_undersampled])
+
+    # Shuffle the resulting balanced dataset
+    df_balanced = df_balanced.sample(frac=1, random_state=42).reset_index(drop=True)
+
+    return df_balanced
+
+
 def transform_data(data: pd.DataFrame) -> pd.DataFrame:
     if data.empty:
         return data
 
     data["rain"] = data["rain"].apply(lambda x: 1 if x > 0 else 0)
+
+    # In my case, the majority class is when it does not rain
+    data = undersampling_majority_class(data[data["rain"] == 0], data[data["rain"] == 1])
 
     # Calculate z-score for temperature and humidity
     for col in ["temperature_2m", "relative_humidity_2m"]:

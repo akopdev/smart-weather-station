@@ -41,6 +41,12 @@ dataset:
 							--end_date 2024-01-01 \
 							--location amsterdam \
     						--format csv > var/dataset.csv
+# -------------------------------------------------------------------------------------------------
+#  notebook: @ Run jupyter notebook
+#  -------------------------------------------------------------------------------------------------
+notebook:
+	@colima start
+	@docker run -d -p 8888:8888 -v .:/home/jovyan/work jupyter/base-notebook start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
 
 # -------------------------------------------------------------------------------------------------
 #  train: @ Train model
