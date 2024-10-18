@@ -53,6 +53,8 @@ notebook:
 #  -------------------------------------------------------------------------------------------------
 train:
 	@$(PY) tools/train.py var/dataset.csv
+	@xxd -i var/rain_forecast_model.keras > var/model.h
+
 
 # -------------------------------------------------------------------------------------------------
 # test: @ Run tests using pytest
@@ -103,13 +105,6 @@ lint.safety:
 #   D107	Missing docstring in __init__
 lint.docs: 
 	$(PYTHON) pydocstyle --convention=numpy --add-ignore=D100,D101,D102,D103,D104,D105,D106,D107 .
-
-
-# -------------------------------------------------------------------------------------------------
-#  build: @ Build container
-#  -------------------------------------------------------------------------------------------------
-build:
-	@docker build -t $(APP):latest -t $(APP):$$($(PY) -m setup --version) .
 
 # -------------------------------------------------------------------------------------------------
 #  clean: @ Clean up local environment

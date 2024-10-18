@@ -13,6 +13,8 @@ voice control.
 
 ## Project log
 
+### Model training
+
 - [X] Download dataset from WorldWeatherOnline
     - Sample of 10 years 
     - Hourly frequency
@@ -28,7 +30,16 @@ voice control.
 - [X] Evaluating the model's effectiveness 
 	- Visualize a confusion matrix
 	- Calculate Recall, Precision, and F-score performance metrics
-- [ ] Quantizing the model with TFLite converter
+- [X] Quantizing
+    - Convert the model to TFLite
+    - On device deployment
+- [ ] Code refactoring
+    - Group functions into classes
+    - Separate business logic of the app from the interface
+    - Build a pipeline for continuous training
+
+### On-device deployment
+
 - [ ] Collecting data with DHT22 sensor
 - [ ] On-device inference with TFLu
 	- Circuit buffer 
@@ -100,6 +111,15 @@ I calculated the confusion matrix, and common performance metrics:
 - `precision`: how many of the predicted positive cases were actually positive (higher is better)
 - `f1-score`: helps to evaluate recall and precision metrics at the same time (higher is better)
 
+## Quantizing
+
+Once the model is trained and evaluated, I need to compress it to allow inference on tiny devices. 
+I exported model to keras format, and then used TFLite to convert it to FlatBuffer, applying
+8-bit quantization to reduce the size. Final binary was converted to c-byte array to be used on
+esp32 microcontroller.
+
+For hex dump, I used `xxd` command, available on MacOS. For Linux you can install it with `sudo apt install xxd`.
+See the `Makefile` for more details on which options to use.
 
 ## Reminders to myself
 
@@ -109,3 +129,8 @@ into a different issue. Best start for a new ML project is to create a robust en
 Docker, and python dependencies, pinned to the specific version.
 - I can't find any benefit of wrapping code into a cli tools, and fitting it into data pipeline
 framework might be much more practical.
+- During the work on the last part of model training, I noticed an interesting relation between the first step 
+(dataset preparation), and next steps (training, quantizing). I should consider converting each step
+into a separate class, and use a basic OOP principles to pass shared entities between steps, reducing
+dependencies on global variables or non-trivial function executions between logically separated parts of the program.
+

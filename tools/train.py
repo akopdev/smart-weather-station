@@ -66,6 +66,41 @@ def evaluate(x_test: pd.DataFrame, y_test: pd.DataFrame, model: tf.keras.Model):
     print("Recall:           ", round(recall, 3))
     print("Precision:        ", round(precision, 3))
     print("F-score:          ", round(f_score, 3))
+    return True
+
+
+class Quantization:
+    def __init__(self, path_to_model: str, test_data: pd.DataFrame):
+        self.model = path_to_model
+        self.test_data = test_data
+
+    def get_representative_data(self):
+        """Select a few hundred of samples randomly from the test dataset to calibrate the quantization"""
+        for i_value in tf.data.Dataset.from_tensor_slices(self.test_data).batch(1).take(100):
+            i_value_f32 = tf.dtypes.cast(i_value, tf.float32)
+        yield [i_value_f32]
+
+    def get_converter(self):
+        converter = tf.lite.TFLiteConverter.from_saved_model(self.model)
+        converter.representative_dataset = tf.lite.RepresentativeDataset(
+            self.get_representative_data
+        )
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+        converter.inference_input_type = tf.int8
+        converter.inference_output_type = tf.int8
+        return converter
+
+    def converter(self, filename: str) -> bool:
+        converter = self.get_converter()
+        tflite_model = converter.convert()
+        try:
+            with open(filename, "wb") as f:
+                f.write(tflite_model)
+        except Exception as e:
+            log.error(e)
+            return False
+        return True
 
 
 def train(data: pd.DataFrame, epochs: int = 20, batch_size: int = 64):
@@ -82,8 +117,14 @@ def train(data: pd.DataFrame, epochs: int = 20, batch_size: int = 64):
         validation_data=(t_validate, h_validate),
     )
 
-    evaluate(t_test, h_test, model)
-    return model
+    if evaluate(t_test, h_test, model):
+        # TODO: don't mix the model evaluation with the quantization
+        filename = "var/rain_forecast_model"
+        model.export(filename)
+        quantize = Quantization(filename, t_test)
+        if not quantize.converter("var/rain_forecast_model.tflite"):
+            return
+        return model
 
 
 def main():
@@ -97,7 +138,8 @@ def main():
         sys.exit(e)
 
     model = train(data)
-    model.save("var/rain_forecast_model.keras")
+    if not model:
+        sys.exit("Model could not be trained")
 
 
 if __name__ == "__main__":
