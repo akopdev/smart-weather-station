@@ -11,6 +11,18 @@ voice control.
 > **Note:** This project is in an active development phase, with intention to be 
 > used as a learning dairy for myself.
 
+## Working with the garage door up
+
+This project is built "with the garage door up" mindset, inspired by Andy Matuschak's 
+[notes](https://notes.andymatuschak.org/About_these_notes?stackedNotes=z21cgR9K3UcQ5a7yPsj2RUim3oM2TzdBByZu). 
+
+I'm inviting you to see the work before it's finished, so you can follow the progress as it emerges.
+
+This is "anti-marketing" because marketing is about promoting a product in the best possible light, 
+whereas working with the garage door up exposes unpolished work and it is more realistic.
+
+Feel free to reach me out with any questions or suggestions, or open an issue.
+
 ## Project log
 
 ### Model training
@@ -41,8 +53,7 @@ voice control.
 ### On-device deployment
 
 - [ ] Collecting data with DHT22 sensor
-- [ ] On-device inference with TFLu
-	- Circuit buffer 
+- [ ] On-device inference
 
 ## Prepare dataset
 
