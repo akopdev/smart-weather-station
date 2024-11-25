@@ -5,7 +5,7 @@ This is an exploration project, to discover the possibilities of machine learnin
 on a tiny microcontroller. The goal is to create a weather station that can predict
 the weather based on the data it collects. 
 
-Final device should have a Apple HomeKit integration no enable home automation and
+Final device should have an Apple HomeKit integration no enable home automation and
 voice control.
 
 > **Note:** This project is in an active development phase, with intention to be 
@@ -45,7 +45,7 @@ Feel free to reach me out with any questions or suggestions, or open an issue.
 - [X] Quantizing
     - Convert the model to TFLite
     - On device deployment
-- [ ] Code refactoring
+- [X] Code refactoring
     - Group functions into classes
     - Separate business logic of the app from the interface
     - Build a pipeline for continuous training
@@ -98,11 +98,6 @@ I used the basic `z-score` technique to scale the temperature and humidity featu
 to ensure that each input feature contributes equally during training. To validate the
 results, 
 
-Example of usage (including default parameters) can be found in the `Makefile`:
-
-```bash
-make dataset
-```
 
 ## Training the model
 
