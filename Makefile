@@ -5,7 +5,7 @@
 
 PY = .venv/bin/python
 PYTHON = @$(PY) -m
-APP = sws-tools
+APP = model
 
 # -------------------------------------------------------------------------------------------------
 # help: @ List available tasks on this project
@@ -18,7 +18,6 @@ help:
 # init: @ Setup local environment
 # -------------------------------------------------------------------------------------------------
 init: activate install
-
 
 # -------------------------------------------------------------------------------------------------
 # Activate virtual environment
@@ -34,26 +33,11 @@ install:
 	$(PYTHON) pip install -r requirements.in
 
 # -------------------------------------------------------------------------------------------------
-#  dataset: @ Generate dataset
-#  -------------------------------------------------------------------------------------------------
-dataset:
-	@$(PY) tools/dataset.py --start_date 2014-01-01 \
-							--end_date 2024-01-01 \
-							--location amsterdam \
-    						--format csv > var/dataset.csv
+# train: @ Train model
 # -------------------------------------------------------------------------------------------------
-#  notebook: @ Run jupyter notebook
-#  -------------------------------------------------------------------------------------------------
-notebook:
-	@colima start
-	@docker run -d -p 8888:8888 -v .:/home/jovyan/work jupyter/base-notebook start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
-
-# -------------------------------------------------------------------------------------------------
-#  train: @ Train model
-#  -------------------------------------------------------------------------------------------------
 train:
-	@$(PY) tools/train.py var/dataset.csv
-	@xxd -i var/rain_forecast_model.keras > var/model.h
+	@$(PYTHON) $(APP)
+	@xxd -i var/rain_forecast_model.tfile > var/model.h
 
 
 # -------------------------------------------------------------------------------------------------

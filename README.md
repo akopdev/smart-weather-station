@@ -134,13 +134,13 @@ See the `Makefile` for more details on which options to use.
 
 ## Reminders to myself
 
-- Python packages, specially so complicated as TensorFlow, can be a nightmare to install. I spent
+- [ ] Python packages, specially so complicated as TensorFlow, can be a nightmare to install. I spent
 hours trying to reproduce Jupyter notebook environment both remote and local, and each time I ran
 into a different issue. Best start for a new ML project is to create a robust environment with
 Docker, and python dependencies, pinned to the specific version.
-- I can't find any benefit of wrapping code into a cli tools, and fitting it into data pipeline
+- [X] I can't find any benefit of wrapping code into a cli tools, and fitting it into data pipeline
 framework might be much more practical.
-- During the work on the last part of model training, I noticed an interesting relation between the first step 
+- [X] During the work on the last part of model training, I noticed an interesting relation between the first step 
 (dataset preparation), and next steps (training, quantizing). I should consider converting each step
 into a separate class, and use a basic OOP principles to pass shared entities between steps, reducing
 dependencies on global variables or non-trivial function executions between logically separated parts of the program.

@@ -4,3 +4,4 @@ tensorflow
 pandas
 matplotlib
 seaborn
+git+https://github.com/akopdev/callisto.git
